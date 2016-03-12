@@ -1,8 +1,489 @@
-<html>
+<!DOCTYPE html>
+<html lang="en" ng-app="newtabApp">
 <head>
-	<title></title>
+  <title>Newtab, and a little more..</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
+
+  <link href='img/favicon.ico' rel='icon' type='image/x-icon'/>
+  <link href='https://www.newtab.in/' rel='canonical'/>
+  <link href='img/icon.png' rel='icon' type='image/png'/>
+
+  <!--summernote dependencies-->
+  <script src="components/jquery/dist/jquery.min.js"></script>
+  <link rel="stylesheet" href="components/bootstrap/dist/css/bootstrap.min.css">
+  <script src="components/bootstrap/dist/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="components/font-awesome/css/font-awesome.min.css">
+
+  <!--summernote-->
+  <link rel="stylesheet" href="components/summernote/dist/summernote.css" />
+  <script src="components/summernote/dist/summernote.js"></script>
+  <script src="components/summernote/lang/summernote-de-DE.js"></script>
+
+  <!--angular-summernote dependencies -->
+  <script src="components/angular/angular.min.js"></script>
+  <script src="components/angular-summernote/dist/angular-summernote.js"></script>
+
+  <style>
+    body {
+      margin-top: 100px;
+      /*margin: 0px 5px;*/
+      background: #1490E7;
+      -webkit-background-size: cover;
+      -moz-background-size: cover;
+      -o-background-size: cover;
+      background-size: cover;
+    }
+    .navbar-inverse .navbar-brand{
+      color: #FFFFFF;
+      font-size: 120%;
+    }
+    /*.navbar-actions .glyphicon {
+      color: #fff;
+      font-size: 25px;
+      padding: 10px 15px;
+    }*/
+    .navbar-actions .action {
+      padding: 9px 0 0 10px;
+      display: inline-block;
+    }
+    [ng-click] {
+        cursor: pointer;
+    }
+    .welcomemsg{
+      padding: 20px;
+      background-color: #ffffff;
+    }
+    .panel{border-radius: 0}
+    .notewrapper{
+      padding: 0;
+      margin-bottom: 20px;
+      /*background-color: #f5f5f5;*/
+      background: linear-gradient(to right, #393939, #141414) center no-repeat fixed;
+    }
+    .starred-true .panel-heading {
+        background-color: rgba(255, 193, 7, 0.51);
+    }
+    .marked-true{padding: 5px 0;}
+    .starred-true .note-editor.note-frame .note-editing-area .note-editable {
+      background-color: rgba(255,235,59,0.4);
+    }
+    .notewrapper .controls{padding: 8px 10px;}
+    .notewrapper .mark{
+      width: 20px;
+      height: 20px;
+      vertical-align: bottom;
+      margin-right: 10px;
+    }
+
+    .notewrapper .controls .glyphicon {
+      padding: 0 12px;
+      font-size: 20px;
+      color: #ABABAB;
+    }
+    .notewrapper .controls .glyphicon-trash {
+      color: #15EF8A;
+    }
+    .notewrapper .controls .glyphicon-star {
+      color: #FF9B00;
+      font-size: 21px;
+    }
+    .note-editor.note-frame {
+      border: none;
+    }
+    #addnew-btn{
+      position: fixed;
+      width: 60px;
+      height: 60px;
+      background: #FF3D00;
+      border-radius: 99%;
+      right: 25px;
+      bottom: 25px;
+      cursor: pointer;
+    }
+    #addnew-btn span{
+      position: relative;
+      font-size: 50px;
+      margin-left: 15px;
+      bottom: 4px;
+      color: #fff;
+    }
+
+    .hoveranimate{
+      transition: .1s all;
+    }
+    .hoveranimate:hover{transform: scale(1.2);}
+    /*desktop*/
+    @media screen and (min-width: 768px){
+        body{
+          margin: 100px 5px 0;
+          background: -webkit-linear-gradient(#106CAD, #2FB3E4, #4ADDFE) center no-repeat fixed;
+          background: -o-linear-gradient(#106CAD, #2FB3E4, #4ADDFE) center no-repeat fixed;
+          background: -moz-linear-gradient(#106CAD, #2FB3E4, #4ADDFE) center no-repeat fixed;
+          background: linear-gradient(#106CAD, #2FB3E4, #4ADDFE) center no-repeat fixed;
+        }
+        /*.notewrapper .controls{margin-left: 45%;}*/
+    }
+
+    /*devices*/
+    @media screen and (max-width: 768px){
+        .notewrapper{margin-bottom: 47px}
+        .notewrapper .note-insert, .notewrapper .note-headline, .notewrapper .note-statusbar, .tooltip {display: none !important;}
+        /*body {
+          background: -webkit-linear-gradient(#FEF088, #FDEC5E, #FEEA49, #FEE100) center no-repeat fixed;
+          background: -o-linear-gradient(#FEF088, #FDEC5E, #FEEA49, #FEE100) center no-repeat fixed;
+          background: -moz-linear-gradient(#FEF088, #FDEC5E, #FEEA49, #FEE100) center no-repeat fixed;
+          background: linear-gradient(#9AC732, #6FAB1E) center no-repeat fixed;
+        }*/
+    }
+    /*.panel-default>.panel-heading {display: none;}*/
+  </style>
 </head>
-<body>
-	Newtab
+<body ng-controller="nt_todoCtrl">
+  <nav class="navbar navbar-fixed-top navbar-inverse">
+    <div class="container-fluid">
+      <div class="navbar-header pull-left">
+        <!-- <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+          <span class="sr-only">Toggle navigation</span>
+          <span id="user"></span>
+          <span class="glyphicon glyphicon-menu-down"></span>
+        </button> -->
+        <a class="navbar-brand" href="/">newtab.in</a>
+        <!-- <span class="glyphicon glyphicon-chevron-down"></span> -->
+      </div>
+      <div class="navbar-actions pull-right">
+        <span class="action" ng-show="isMultiDeleteActive" ng-click="deleteMarked()"><span class="btn btn-danger">Delete</span></span>
+        <span class="action" ng-click="addNote()"><span class="btn btn-primary">Add</span></span>
+        <span class="action" ng-click="sync()"><span class="btn btn-default">Save</span></span>
+        <!-- <span class="glyphicon glyphicon-plus" ng-click="addNote()"></span>
+        <span class="glyphicon glyphicon-floppy-disk" ng-click="sync()"></span> -->
+      </div>  
+      <!-- <div id="navbar" class="collapse navbar-collapse">
+        <ul class="nav navbar-nav navbar-right">
+          <li class="active"><a href="/">Home</a></li>
+          <li><a href="/">About</a></li>
+        </ul>
+      </div> --><!--/.nav-collapse -->
+    </div>
+  </nav>
+  <div class="container-fluid">
+      <div class="row">
+        <div ng-hide="notes.length>0" class="welcomemsg col-md-4 col-md-offset-4 text-center">
+          Welcome! Let's get started.. <br/><br/>
+          <a href="javascript:void(0)" ng-click="addNote()">Add</a> a note.
+        </div>  
+        <div id="notescontainer" class="col-md-8 col-md-offset-2">
+          <form ng-repeat="note in notes" class="noterepeat">
+              <div class="notewrapper starred-{{note.isStarred}} marked-{{note.isMarked}}">
+                <div class="controls">
+                  <span ng-hide="note.isStarred"><input class="mark" ng-change="updateMarkedStatus()" type="checkbox" ng-model="note.isMarked"/></span>
+                  <span class='added-time label label-primary' title="{{note.addedTime}}">{{note.addedTime | timeAgo}}</span>
+                  <span class="pull-right">
+                    <span class="star" ng-click='toggleStar(note)'>
+                      <span class='hoveranimate glyphicon glyphicon-star' ng-show="note.isStarred"></span>
+                      <span class='hoveranimate glyphicon glyphicon-star-empty' ng-hide="note.isStarred"></span>
+                    </span>
+                    <!-- <span class="hoveranimate glyphicon glyphicon-floppy-disk" ng-click='sync()'></span> -->
+                    <span class='hoveranimate glyphicon glyphicon-trash' ng-click='deleteNote(note)'></span>
+                  </span>
+                </div>
+                <summernote ng-model="note.html" config="options"
+                            on-init="init()" on-enter="enter()" on-focus="focus(evt)"
+                            on-blur="blur(evt)" on-paste="paste(evt)" on-keyup="keyup(evt)" on-keydown="keydown(evt)"
+                            on-change="change(contents)"
+                            on-image-upload="imageUpload(files)"
+                            editable="editable" editor="editor">
+                </summernote>
+              </div>
+          </form>
+        </div>
+        <span class="hoveranimate" id="addnew-btn" ng-click="addNote()"><span>+</span></span>
+      </div>
+  </div>
+  <!-- <script src="https://hammerjs.github.io/dist/hammer.js"></script> -->
+  <script src="components/hammerjs/dist/hammer.js"></script>
+  <script>
+    var newtabApp = angular.module('newtabApp', ['summernote'])
+
+    newtabApp.factory('hammerUtils', function(){
+      var _hammer = _hammer || {};
+      _hammer.isSwipeInProgress = false;
+
+      _hammer.bindSwipeEvent = function(elem, callback){
+        _hammer.swipeElem = new Hammer(elem);
+        _hammer.swipeElem.on("panleft panright press", function(ev) {
+            if(!_hammer.isSwipeInProgress){
+              _hammer.isSwipeInProgress = true;
+              if($(ev.target).closest('.noterepeat').length > 0 ){
+                // console.log($(ev.target).closest('.noterepeat'), ev.type);
+                callback($(ev.target).closest('.noterepeat'), ev.type);
+                setTimeout(function(){
+                  _hammer.isSwipeInProgress = false;
+                }, 1000);
+              }
+            }
+        });
+      };
+
+      return _hammer;
+    });
+
+    newtabApp.factory('local', function(){
+      var local = {};
+
+      local.set = function(key, value){
+        localStorage.setItem(key, JSON.stringify(value));
+      }
+
+      local.get = function(key){
+        return JSON.parse(localStorage.getItem(key));
+      }
+
+      return local;
+    });
+
+    newtabApp.filter('timeAgo', function() {
+      return function (time){
+        switch (typeof time) {
+            case 'number': break;
+            case 'string': time = +new Date(time); break;
+            case 'object': if (time.constructor === Date) time = time.getTime(); break;
+            default: time = +new Date();
+        }
+        var time_formats = [
+            [60, 'seconds', 1], // 60
+            [120, 'a minute ago', 'a minute from now'], // 60*2
+            [3600, 'minutes', 60], // 60*60, 60
+            [7200, 'an hour ago', 'an hour from now'], // 60*60*2
+            [86400, 'hours', 3600], // 60*60*24, 60*60
+            [172800, 'Yesterday', 'Tomorrow'], // 60*60*24*2
+            [604800, 'days', 86400], // 60*60*24*7, 60*60*24
+            [1209600, 'Last week', 'Next week'], // 60*60*24*7*4*2
+            [2419200, 'weeks', 604800], // 60*60*24*7*4, 60*60*24*7
+            [4838400, 'Last month', 'Next month'], // 60*60*24*7*4*2
+            [29030400, 'months', 2419200], // 60*60*24*7*4*12, 60*60*24*7*4
+            [58060800, 'Last year', 'Next year'], // 60*60*24*7*4*12*2
+            [2903040000, 'years', 29030400], // 60*60*24*7*4*12*100, 60*60*24*7*4*12
+            [5806080000, 'Last century', 'Next century'], // 60*60*24*7*4*12*100*2
+            [58060800000, 'centuries', 2903040000] // 60*60*24*7*4*12*100*20, 60*60*24*7*4*12*100
+        ];
+        var seconds = (+new Date() - time) / 1000,
+            token = 'ago', list_choice = 1;
+
+        if (seconds == 0) {
+            return 'Just now'
+        }
+        if (seconds < 0) {
+            seconds = Math.abs(seconds);
+            token = 'from now';
+            list_choice = 2;
+        }
+        var i = 0, format;
+        while (format = time_formats[i++])
+            if (seconds < format[0]) {
+                if (typeof format[2] == 'string')
+                    return format[list_choice];
+                else
+                    return Math.floor(seconds / format[2]) + ' ' + format[1] + ' ' + token;
+            }
+        return time;
+      }
+    });
+
+    newtabApp.controller('nt_todoCtrl', function($scope, $filter, hammerUtils, local){
+      $scope.notes = local.get('notes') || [];
+
+
+      // $scope.notes.push('<p>fourth <b>note</b></p>');
+      // $scope.notes.push('<p>Second <b>note</b></p>');
+
+      var getNewNoteObj = function(){
+        return {
+          html: "",
+          addedTime: (new Date()),
+          updatedTime: (new Date()),
+          isStarred: false,
+          isMarked: false,
+          lastRefreshed: (new Date())
+        }
+      }
+
+      var unmarkAll = function(){
+        angular.forEach($scope.notes, function(value, key){
+          value.isMarked = false;
+        });
+      };
+
+      $scope.options = {
+        toolbar: [
+                ['edit',['undo','redo']],
+                ['style', ['bold', 'italic', 'underline']],
+                ['alignment', ['ul', 'ol']],
+                ['headline', ['style']],
+                ['insert', ['link', 'video']],
+                ['view', ['fullscreen']]
+            ]
+      };
+
+      $scope.addNote = function(){
+        $scope.notes.unshift(getNewNoteObj());
+      };
+
+      $scope.deleteNote = function(note){
+        if(note.isStarred){
+          alert("Starred notes can't be deleted!")
+        }
+        else{
+          if(confirm("Delete note?")){
+            $scope.notes.splice($scope.notes.indexOf(note), 1);
+            $scope.sync();
+          }
+        }
+      };
+
+      $scope.deleteMarked = function(){
+        if (confirm('Delete all selected notes?')) {
+          for(var i=0; i< $scope.notes.length; i++){
+            if ($scope.notes[i].isMarked && !$scope.notes[i].isStarred) {
+              $scope.notes.splice(i, 1);
+              i--;
+            };
+          }
+
+
+          // angular.forEach($scope.notes, function(value, key){
+          //   if (value.isMarked && !value.isStarred) {
+          //     $scope.notes.splice(key, 1);
+          //   };
+          // });
+          $scope.sync();
+          $scope.updateMarkedStatus();
+        };
+      };
+
+      $scope.sync = function(){
+        unmarkAll();
+        local.set('notes', $scope.notes);
+      };
+
+      $scope.toggleStar = function(note){
+        note.isStarred = !note.isStarred;
+        $scope.sync();
+      };
+
+      $scope.updateMarkedStatus = function(){
+        var counter = 0;
+        angular.forEach($scope.notes, function(value, key){
+          if(value.isMarked){
+            counter++;
+            $scope.isMultiDeleteActive = true;
+            return true;
+          }
+        });
+        $scope.isMultiDeleteActive = (counter>0) ? true : false;
+      }
+
+      var updateNotesTime = function(){
+        angular.forEach($scope.notes, function(value, key){
+          var ts = $filter('timeAgo')(value.addedTime);
+          $('#notescontainer .noterepeat:eq('+key+') .added-time').text(ts);
+        });
+
+        setTimeout(updateNotesTime, 5000);
+      }
+      updateNotesTime();
+
+      // setInterval(function(){
+
+      //   $scope.$apply(function(){
+      //     angular.forEach($scope.notes, function(value, key){
+      //       value.lastRefreshed = (new Date());
+      //     });
+      //   });
+      //   console.log('scope refreshed')
+      // }, 1000);
+
+      // $scope.options = {
+      //   height: 300,
+      //   focus: true,
+      //   airMode: true,
+      //   toolbar: [
+      //           ['edit',['undo','redo']],
+      //           ['headline', ['style']],
+      //           ['style', ['bold', 'italic', 'underline', 'superscript', 'subscript', 'strikethrough', 'clear']],
+      //           ['fontface', ['fontname']],
+      //           ['textsize', ['fontsize']],
+      //           ['fontclr', ['color']],
+      //           ['alignment', ['ul', 'ol', 'paragraph', 'lineheight']],
+      //           ['height', ['height']],
+      //           ['table', ['table']],
+      //           ['insert', ['link','picture','video','hr']],
+      //           ['view', ['fullscreen', 'codeview']],
+      //           ['help', ['help']]
+      //       ]
+      // };
+
+      $scope.init = function() { console.log('Summernote is launched'); };
+      $scope.enter = function() { console.log('Enter/Return key pressed'); };
+      $scope.focus = function(e) {
+        console.log('Editable area is focused');
+        // $(e.target).closest('.panel').find('.panel-heading').slideDown();
+        $('#addnew-btn').hide();
+      };
+      $scope.blur = function(e) {
+        // $(e.target).closest('.panel').find('.panel-heading').slideUp();
+        console.log('Editable area loses focus');
+        $('#addnew-btn').show();
+      };
+      $scope.paste = function(e) {
+        console.log('Called event paste: ' +  e.originalEvent.clipboardData.getData('text'));
+        if(e.originalEvent.clipboardData.items[0].kind === 'file'){
+          e.preventDefault();
+          alert('Not allowed to paste images');
+        }
+      };
+      $scope.change = function(contents) {
+        console.log('contents are changed:', contents, $scope.editable);
+      };
+      $scope.keyup = function(e) { console.log('Key is released:', e.keyCode); };
+      $scope.keydown = function(e) { console.log('Key is pressed:', e.keyCode); };
+      $scope.imageUpload = function(files) {
+        console.log('image upload:', files);
+        console.log('image upload\'s editor:', $scope.editor);
+        console.log('image upload\'s editable:', $scope.editable);
+      };
+
+      // var _hammer = _hammer || {};
+      // _hammer.swipeElem = new Hammer(document.getElementById('notescontainer'));
+      // _hammer.isSwipeInProgress = false;
+
+      // _hammer.swipeElem.on("panleft panright tap press", function(ev) {
+      //     // myElement.textContent = ev.type +" gesture detected.";
+      //     if(!_hammer.isSwipeInProgress && ev.type == 'panleft' || ev.type == 'panright'){
+      //       _hammer.isSwipeInProgress = true;
+      //       if($(ev.target).closest('.noterepeat').length > 0 ){
+      //         console.log($(ev.target).closest('.noterepeat'));
+      //         setTimeout(function(){
+      //           _hammer.isSwipeInProgress = false;
+      //         }, 1000);
+      //       }
+      //     }
+      // });
+      hammerUtils.bindSwipeEvent(document.getElementById('notescontainer'), function($elem, eventType){
+        if(eventType === 'press'){
+          $elem.find('.mark').trigger('click');
+        }
+        else{
+          // var animateObj = {
+          //   opacity: 0,
+          //   height: "toggle"
+          // };
+          // (eventType == 'panleft') ? (animateObj.right = "+=5000") : (animateObj.left = "+=5000");
+          // $elem.css('position', 'relative').animate(animateObj, 500, function() {
+
+          // });
+        }
+      });
+    });
+  </script>
 </body>
 </html>
